@@ -1,4 +1,9 @@
 .idea/
 venv/
 .ipynb_checkpoints/
+<<<<<<< HEAD
+.server/data/
+=======
+./server/data
 data/
+>>>>>>> 71c2cbc51b52a417652dbf86c1db28cb6cd10937
