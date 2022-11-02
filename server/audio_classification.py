@@ -2,7 +2,6 @@ import pandas as pd
 import librosa
 import os
 from fastdtw import fastdtw
-from scipy.spatial.distance import euclidean
 import numpy as np
 
 
@@ -15,13 +14,14 @@ def load_genres(genre):
 
 
 def dtw_distance(arg1, arg2):
-    distance, path = fastdtw(arg1, arg2, dist=euclidean)
+    distance = librosa.sequence.dtw(arg1, arg2, metric='euclidean')
+    print(np.ndarray(distance).shape)
     return distance
 
 
 def extract_features(audio):
     y, sr = librosa.load(audio)
-    return librosa.feature.mfcc(y=y, sr=sr).T
+    return librosa.feature.mfcc(y=y, sr=sr)
 
 
 def compute_dist(genre_files, audio):
