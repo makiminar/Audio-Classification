@@ -12,21 +12,23 @@ def load_genres(genre):
     return l
 
 
+def euclidean(arg1, arg2):
+    sm = 0
+    for x in range(len(arg1)):
+        sm += (arg1[x] - arg2[x])**2
+    return np.sqrt(sm)
+
+
 # dtw for 2 sequences
 def dtw_distance(arg1, arg2, window):
-    n, m = len(arg1), len(arg2)
-    print("n: ", n)
-    print("m: ", m)
+    n, m = arg1.shape[1], arg2.shape[1]
 
     w = np.max([window, abs(n - m)])
 
     # initialize DTW array
     DTW = np.zeros((n + 1, m + 1))
-    DTW[0, :] = np.inf
-    DTW[:, 0] = np.inf
+    DTW[:, :] = np.inf
     DTW[0, 0] = 0
-
-    print(DTW.shape)
 
     for i in range(1, n + 1):
         for j in range(np.max([1, i - w]), np.min([m, i + w]) + 1):
@@ -34,9 +36,8 @@ def dtw_distance(arg1, arg2, window):
 
     for i in range(1, n + 1):
         for j in range(np.max([1, i - w]), np.min([m, i + w]) + 1):
-            cost = np.linalg.norm(arg1[i-1] - arg2[j-1])
+            cost = euclidean(arg1[:, i-1], arg2[:, j-1])
             DTW[i, j] = cost + np.min([DTW[i - 1, j], DTW[i, j - 1], DTW[i - 1, j - 1]])
-            print(DTW[i, j])
 
     return DTW[n, m]
 
