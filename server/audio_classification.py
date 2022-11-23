@@ -35,7 +35,6 @@ class AudioClassifier:
                     print(f"Error during load of a song: ./data/train/ {genre}/{str(fname)}")
         else:
             for file in os.listdir('./data/train/' + genre):
-                print(file)
                 try:
                     l.append(self.extract_features('./data/train/' + genre + "/" + str(file)))
                 except:

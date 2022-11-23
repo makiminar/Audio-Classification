@@ -1,12 +1,15 @@
 <script setup>
 import Pie from './components/pieChart'
 import '@formkit/themes/genesis'
+import axios from 'axios'
+
 // variables
 const audioFile = ref(null);
 const showLoading = ref(false);
 const chartOptions = ref({
   hoverBorderWidth: 20
 });
+
 const chartData = ref({
   hoverBackgroundColor: "red",
   hoverBorderWidth: 10,
@@ -14,7 +17,7 @@ const chartData = ref({
   datasets: [
     {
       label: "Data One",
-      backgroundColor: ["#41B883", "#E46651", "#00D8FF"],
+      backgroundColor: ["#41B883", "#E46651", "#2bcb4d", "#8a4e1d", "#461aa1", "#84198c"],
       data: [1, 10, 5]
     }
   ]
@@ -25,15 +28,35 @@ function toggleShowLoading() {
   showLoading.value = !showLoading.value
 }
 
-function getPrediction() {
+function handleFileUpload(event) {
+  audioFile.value = event.target.files[0];
+  console.log(audioFile)
+}
 
-  // this.$axios.$post('http://icanhazip.com').then(response =>{
-  //   console.log(response)
-  // })
+function getPrediction() {
+  let formData = new FormData();
+  formData.append('audio', audioFile.value[0].file);
+  console.log(audioFile.value[0].file)
+
   toggleShowLoading();
-  setTimeout(function () {
+
+  axios.post('http://127.0.0.1:5000',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+  ).then(response => {
     toggleShowLoading();
-  }, 5000);
+    console.log(response.data);
+    chartData.value.labels = Object.keys(response.data);
+    chartData.value.datasets[0].data = Object.values(response.data);
+    console.log(Object.keys(response.data))
+    console.log(Object.values(response.data))
+  }).catch(error => {
+    console.log(error);
+  });
 }
 
 </script>
@@ -46,14 +69,15 @@ function getPrediction() {
 
     <div class="text-center mt-12">
       <FormKit type="form" :submit-attrs="{ wrapperClass: 'm-auto'}" @submit="getPrediction">
-      <FormKit
-          :wrapper-class="{
+        <FormKit
+            :wrapper-class="{
             'm-auto': true
           }"
-          v-model="audioFile"
-          type="file"
-          label="Audio file"
-      />
+            ref="file"
+            v-model="audioFile"
+            type="file"
+            label="Audio file"
+        />
       </FormKit>
     </div>
 
