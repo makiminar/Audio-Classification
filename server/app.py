@@ -12,11 +12,15 @@ CORS(app)
 def genre_post():
     # get audio file from request
     audio = request.files['audio']
-    print(audio)
+    method = request.form.get('method')
+    print(method)
     if not audio:
         return "Failed during loading file."
     genres_names = ["classical", "country", "jazz", "metal", "pop"]
-    # classifier = AudioClassifier(genres_names=genres_names, train_size=10)
-    classifier = AudioClassifierAggregatedMfccs(genres_names=genres_names)
-    # compute distances of audio from genres
-    return classifier.classify(audio)
+    if method == "Aggregated Mfccs":
+        return AudioClassifierAggregatedMfccs(genres_names=genres_names).classify(audio)
+    elif method == "Song-wise Mfccs":
+        return AudioClassifier(genres_names=genres_names, train_size=10).classify(audio)
+    else:
+        return "Method not supported."
+    # python -m flask --app app run

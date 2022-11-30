@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pandas as pd
 import librosa
 import os
@@ -36,12 +38,12 @@ class AudioClassifierAggregatedMfccs:
         return l
 
     def normalize(self, dist):
-        norm_dist = {}
+        norm_dict = {}
         sm = np.array(dist).sum()
 
         for x in range(len(dist)):
-            norm_dist[self.genres_names[x]] = (dist[x] / sm) * 100
-        return norm_dist
+            norm_dict[self.genres_names[x]] = (dist[x] / sm) * 100
+        return dict(sorted(norm_dict.items(), key=lambda item: item[1], reverse=True))
 
     def l_metrics(self, arg1, arg2, exp=2):
         sm = 0
