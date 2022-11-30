@@ -2,23 +2,27 @@
 import Pie from './components/pieChart'
 import '@formkit/themes/genesis'
 import axios from 'axios'
+import Toggle from '@vueform/toggle'
 
 // variables
 const audioFile = ref(null);
+const sortedData = ref([]);
 const showLoading = ref(false);
+const method = ref("1");
 const chartOptions = ref({
-  hoverBorderWidth: 20
+  hoverBorderWidth: 12
 });
 
 const chartData = ref({
   hoverBackgroundColor: "red",
   hoverBorderWidth: 10,
-  labels: ["Green", "Red", "Blue"],
+  labels: ["Not selected"],
   datasets: [
     {
       label: "Data One",
       backgroundColor: ["#41B883", "#E46651", "#2bcb4d", "#8a4e1d", "#461aa1", "#84198c"],
-      data: [1, 10, 5]
+      borderColor: '#dedede',
+      data: [1]
     }
   ]
 });
@@ -36,6 +40,7 @@ function handleFileUpload(event) {
 function getPrediction() {
   let formData = new FormData();
   formData.append('audio', audioFile.value[0].file);
+  formData.append('method', method.value);
   console.log(audioFile.value[0].file)
 
   toggleShowLoading();
@@ -49,11 +54,14 @@ function getPrediction() {
       }
   ).then(response => {
     toggleShowLoading();
-    console.log(response.data);
-    chartData.value.labels = Object.keys(response.data);
-    chartData.value.datasets[0].data = Object.values(response.data);
-    console.log(Object.keys(response.data))
-    console.log(Object.values(response.data))
+    let data = response.data
+    // console.log(Object.keys(data).sort(function(a,b){return data[b]-data[a]}).map((key) => ({ [key]: data[key] })));
+    data = Object.keys(data).sort((a, b) => data[b] - data[a]).reduce((r, k) => ({...r, [k]: data[k]}), {});
+    // console.log(Object.entries(data).sort((a, b) => b[1] - a[1]))
+    sortedData.value = data
+    chartData.value.labels = Object.keys(sortedData.value);
+    chartData.value.datasets[0].data = Object.values(sortedData.value);
+
   }).catch(error => {
     console.log(error);
   });
@@ -68,8 +76,10 @@ function getPrediction() {
     </div>
 
     <div class="text-center mt-12">
-      <FormKit type="form" :submit-attrs="{ wrapperClass: 'm-auto'}" @submit="getPrediction">
+      <FormKit :actions="false" #default="{ state: { valid } }" type="form" :submit-attrs="{ wrapperClass: 'm-auto'}"
+               @submit="getPrediction">
         <FormKit
+            validation="required"
             :wrapper-class="{
             'm-auto': true
           }"
@@ -78,15 +88,35 @@ function getPrediction() {
             type="file"
             label="Audio file"
         />
+        <Toggle class="mb-4" v-model="method" falseValue="Song-wise Mfccs" trueValue="Aggregated Mfccs"/>
+        {{ method }}
+        <FormKit :wrapper-class="{
+            'm-auto': true
+          }" type="submit" :disabled="!valid"/>
       </FormKit>
     </div>
 
     <div class="text-center box-card mx-auto max-w-full">
       <div class="flex h-full">
-        <!-- loading button -->
-        <div v-if="showLoading" class="spinner m-auto"></div>
-        <!-- pie chart -->
-        <Pie class="m-auto" v-if="!showLoading" :chartData="chartData" :chartOptions="chartOptions"></Pie>
+        <div v-if="chartData.labels[0] === 'Not selected' && !showLoading" class="m-auto">
+          <h1>Audio not submitted</h1>
+        </div>
+        <div v-else class="m-auto">
+          <!-- loading button -->
+          <div v-if="showLoading" class="spinner"></div>
+          <!-- pie chart -->
+          <div v-if="!showLoading" class="flex">
+            <Pie :chartData="chartData" :chartOptions="chartOptions" :width="450"></Pie>
+            <section class="ml-24 m-auto">
+              <div class="flex flex-row">
+              </div>
+              <h1>Classified as: {{ Object.keys(sortedData)[0] }}</h1>
+              <div v-for="(sortedKey, sortedVal) in Object.entries(sortedData).filter((key,index) => index < 3)">
+                <span>{{ sortedKey[0] }} - {{ parseFloat(sortedKey[1]).toFixed(2) }}%</span>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -137,3 +167,4 @@ h1 {
   }
 }
 </style>
+<style src="@vueform/toggle/themes/default.css"></style>

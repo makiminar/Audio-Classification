@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@formkit/nuxt": "^1.0.0-beta.12",
+    "@vueform/toggle": "^2.1.2",
     "axios": "^1.2.0",
+    "chartjs": "^0.3.24",
     "vue-chartjs": "^4.1.2"
   }
 }
