@@ -7,10 +7,11 @@ import numpy as np
 import random
 from os.path import exists
 
-
 #  classical, jazz, pop, metal, rock, reggae, country, disco
+from abc import ABC, abstractmethod
 
-class AudioClassifierAggregatedMfccs:
+
+class AudioClassifier(ABC):
     def __init__(self, genres_names=None, n_mfcc=3, window_size=5, train_size=90, metric="l2"):
         self.n_mfcc = n_mfcc
         self.window_size = window_size
@@ -19,7 +20,6 @@ class AudioClassifierAggregatedMfccs:
             genres_names = ["classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock",
                             "blues"]
         self.genres_names = genres_names
-        self.genres = []
         self.train_size = train_size
         self.metric = metric
 
@@ -27,15 +27,9 @@ class AudioClassifierAggregatedMfccs:
         for genre in genres_names:
             self.genres.append(self.load_genre(genre))
 
+    @abstractmethod
     def load_genre(self, genre):
-        # mfccs/{genre}/{n_mfcc}_{window_size}_{train_size}
-        path_to_file = f'./mfccs/{genre}/{self.n_mfcc}_{self.window_size}_{self.train_size}'
-        l = []
-        if not exists(path_to_file + '.npy'):
-            l.append(self.aggregate_mfcc(path_to_file, genre))
-        else:
-            l.append(self.load_aggregated_mfccs(path_to_file + '.npy'))
-        return l
+        pass
 
     def normalize(self, dist):
         norm_dict = {}
@@ -84,7 +78,6 @@ class AudioClassifierAggregatedMfccs:
                 else:
                     cost = self.l_metrics(arg1[:, i - 1], arg2[:, j - 1], exp=2)
                 DTW[i, j] = cost + np.min([DTW[i - 1, j], DTW[i, j - 1], DTW[i - 1, j - 1]])
-
         return DTW[n, m]
 
     def extract_features(self, audio):
