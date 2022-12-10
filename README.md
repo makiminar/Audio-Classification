@@ -1,29 +1,20 @@
 # NI-VMM audio classification
+* autoři: Martin Šír, Markéta Minářová
+
+# Popis
+Projekt slouží pro klasifikaci písniček. Použité jsou 2 metody, které jsou více popsány ve zprávě:
+* `Song-wise Mfccs`
+* `Centroid Mfccs`
 
 
-
-## Getting started
-
-To clone the GitLab repository, execute these commands:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.fit.cvut.cz/sirmart2/ni-vmm-audio-classification.git
-git branch -M master
-git push -uf origin master
-```
-
-Requirements for Flask:
-
-- Python 3.7 and higher
-
-Flask installation:
-```
-cd server
-. venv/bin/activate
-pip install Flask (nebo pip3)
-```
-To run the server:
-```
-flask --app app run
-```
+## Spuštění
+### Spuštění Backendu
+* Pro backend je potřeba mít stažený Python.
+* Dále je potřeba přejít do složky `server`.
+* Dále aktivovat virtuální prostředí pomocí příkazu `.venv/bin/activate`.
+* Dále už jen stačí spustit server pomocí příkazu `python -m flask --app app run`.
+### Spuštění Frontendu
+* Pro frontend je potřeba mít stažený Node.js.
+* Dále je potřeba přejít do složky `nuxt-app`, která se nachází se složce `client`.
+* Dále je potřeba stáhnout balíčky pomocí příkazu `npm install`.
+* Dále už jen stačí spustit klienta pomocí příkazu `npm run dev`, který poté poběží na stránce `http://localhost:3000/`.
