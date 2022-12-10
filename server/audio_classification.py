@@ -8,7 +8,7 @@ import random
 #  classical, jazz, pop, metal, rock, reggae, country, disco
 
 class AudioClassifier:
-    def __init__(self, genres_names=None, n_mfcc=3, window_size=5, train_size=None, metric="euclidean"):
+    def __init__(self, genres_names=None, n_mfcc=3, window_size=5, train_size=None, metric="l2"):
         self.n_mfcc = n_mfcc
         self.window_size = window_size
         self.genres = []
