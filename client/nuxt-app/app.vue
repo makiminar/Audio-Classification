@@ -88,7 +88,7 @@ function getPrediction() {
             type="file"
             label="Audio file"
         />
-        <Toggle class="mb-4" v-model="method" falseValue="Song-wise Mfccs" trueValue="Aggregated Mfccs"/>
+        <Toggle class="mb-4" v-model="method" falseValue="Song-wise Mfccs" trueValue="Centroid Mfccs"/>
         {{ method }}
         <FormKit :wrapper-class="{
             'm-auto': true
