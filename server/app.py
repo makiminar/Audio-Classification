@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import request
 from song_wise_classifier import SongWiseClassifier
-from aggregated_mfccs_classifier import AudioClassifierAggregatedMfccs
+from aggregated_mfccs_classifier import AggregatedMfccsClassifier
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def genre_post():
         return "Failed during loading file."
     genres_names = ["classical", "country", "jazz", "metal", "pop"]
     if method == "Centroid Mfccs":
-        return AudioClassifierAggregatedMfccs(genres_names=genres_names).classify(audio)
+        return AggregatedMfccsClassifier(genres_names=genres_names).classify(audio)
     elif method == "Song-wise Mfccs":
         return SongWiseClassifier(genres_names=genres_names, train_size=10).classify(audio)
     else:
